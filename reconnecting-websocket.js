@@ -40,7 +40,7 @@
  *  onopen  // sometime later...
  *  onmessage
  *  onmessage
- *  etc... 
+ *  etc...
  *
  * It is API compatible with the standard WebSocket API, apart from the following members:
  *
@@ -141,7 +141,7 @@
             if (self.debug || ReconnectingWebSocket.debugAll) {
                 console.debug('ReconnectingWebSocket', 'attempt-connect', url);
             }
-            
+
             var localWs = ws;
             var timeout = setTimeout(function() {
                 if (self.debug || ReconnectingWebSocket.debugAll) {
@@ -151,7 +151,7 @@
                 localWs.close();
                 timedOut = false;
             }, self.timeoutInterval);
-            
+
             ws.onopen = function(event) {
                 clearTimeout(timeout);
                 if (self.debug || ReconnectingWebSocket.debugAll) {
@@ -165,7 +165,7 @@
                 reconnectAttempt = false;
                 eventTarget.dispatchEvent(e);
             };
-            
+
             ws.onclose = function(event) {
                 clearTimeout(timeout);
                 ws = null;
@@ -226,6 +226,10 @@
          * If the connection is already CLOSED, this method does nothing.
          */
         this.close = function(code, reason) {
+            // Default CLOSE_NORMAL code
+            if (typeof code == 'undefined') {
+                code = 1000;
+            }
             forcedClose = true;
             if (ws) {
                 ws.close(code, reason);
