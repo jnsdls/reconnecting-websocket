@@ -118,6 +118,9 @@
 
             /** The maximum time in milliseconds to wait for a connection to succeed before closing and retrying. */
             timeoutInterval: 2000
+
+            /** The maximum number of reconnection attempts to make. Unlimited if null. */
+            maxReconnectAttempts: null,
         }
 
         // Overwrite and define settings with options if they exist.
@@ -195,6 +198,10 @@
 
             if (!reconnectAttempt) {
                 eventTarget.dispatchEvent(generateEvent('connecting'));
+            }
+
+            if (this.maxReconnectAttempts && this.reconnectAttempts > this.maxReconnectAttempts) {
+                return;
             }
 
             if (self.debug || ReconnectingWebSocket.debugAll) {
