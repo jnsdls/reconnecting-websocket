@@ -82,6 +82,9 @@
  * reconnectInterval
  * - The number of milliseconds to delay before attempting to reconnect. Accepts integer. Default: 1000.
  *
+ * maxReconnectInterval
+ * - The maximum number of milliseconds to delay a reconnection attempt. Accepts integer. Default: 30000.
+ *
  * reconnectDecay
  * - The rate of increase of the reconnect delay. Allows reconnect attempts to back off when problems persist. Accepts integer or float. Default: 1.5.
  *
@@ -116,7 +119,8 @@
 
             /** The number of milliseconds to delay before attempting to reconnect. */
             reconnectInterval: 1000,
-
+            /** The maximum number of milliseconds to delay a reconnection attempt. */
+            maxReconnectInterval: 30000,
             /** The rate of increase of the reconnect delay. Allows reconnect attempts to back off when problems persist. */
             reconnectDecay: 1.5,
 
@@ -129,6 +133,7 @@
             /** The binary type, possible values 'blob' or 'arraybuffer', default 'blob'. */
             binaryType: 'blob'
         }
+        if (!options) { options = {}; }
 
         // Overwrite and define settings with options if they exist.
         for (var key in settings) {
@@ -174,6 +179,7 @@
         eventTarget.addEventListener('open',       function(event) { self.onopen(event); });
         eventTarget.addEventListener('close',      function(event) { self.onclose(event); });
         eventTarget.addEventListener('connecting', function(event) { self.onconnecting(event); });
+        eventTarget.addEventListener('onmaxretry', function(event) { self.onmaxretry(event); });
         eventTarget.addEventListener('message',    function(event) { self.onmessage(event); });
         eventTarget.addEventListener('error',      function(event) { self.onerror(event); });
 
@@ -206,6 +212,7 @@
 
             if (reconnectAttempt) {
                 if (this.maxReconnectAttempts && this.reconnectAttempts > this.maxReconnectAttempts) {
+                    eventTarget.dispatchEvent(generateEvent('onmaxretry'));
                     return;
                 }
             } else {
@@ -246,21 +253,27 @@
                 ws = null;
                 if (forcedClose) {
                     self.readyState = WebSocket.CLOSED;
-                    self.onclose(event);
                     eventTarget.dispatchEvent(generateEvent('close'));
                 } else {
                     self.readyState = WebSocket.CONNECTING;
-                    eventTarget.dispatchEvent(generateEvent('connecting'));
+                    var e = generateEvent('connecting');
+                    e.code = event.code;
+                    e.reason = event.reason;
+                    e.wasClean = event.wasClean;
+                    e.reconnectAttempts = self.reconnectAttempts;
+                    eventTarget.dispatchEvent(e);
                     if (!reconnectAttempt && !timedOut) {
                         if (self.debug || ReconnectingWebSocket.debugAll) {
                             console.debug('ReconnectingWebSocket', 'onclose', self.url);
                         }
                         eventTarget.dispatchEvent(generateEvent('close'));
                     }
+
+                    var timeout = self.reconnectInterval * Math.pow(self.reconnectDecay, self.reconnectAttempts);
                     setTimeout(function() {
                         self.reconnectAttempts++;
                         self.open(true);
-                    }, self.reconnectInterval * Math.pow(self.reconnectDecay, self.reconnectAttempts));
+                    }, timeout > self.maxReconnectInterval ? self.maxReconnectInterval : timeout);
                 }
             };
             ws.onmessage = function(event) {
@@ -275,7 +288,7 @@
                 if (self.debug || ReconnectingWebSocket.debugAll) {
                     console.debug('ReconnectingWebSocket', 'onerror', self.url, event);
                 }
-                eventTarget.dispatchEvent(generateEvent('event'));
+                eventTarget.dispatchEvent(generateEvent('error'));
             };
         }
 
@@ -335,6 +348,8 @@
     ReconnectingWebSocket.prototype.onclose = function(event) {};
     /** An event listener to be called when a connection begins being attempted. */
     ReconnectingWebSocket.prototype.onconnecting = function(event) {};
+    /** An event listener to be called when max retry attempt has exceeded. */
+    ReconnectingWebSocket.prototype.onmaxretry = function(event) {};
     /** An event listener to be called when a message is received from the server. */
     ReconnectingWebSocket.prototype.onmessage = function(event) {};
     /** An event listener to be called when an error occurs. */
