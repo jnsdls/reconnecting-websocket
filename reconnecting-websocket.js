@@ -256,12 +256,17 @@
                     eventTarget.dispatchEvent(generateEvent('close'));
                 } else {
                     self.readyState = WebSocket.CONNECTING;
+
+                    var randTimeout = self.reconnectInterval * Math.pow(self.reconnectDecay, self.reconnectAttempts);
+                    var retryTimeout = randTimeout > self.maxReconnectInterval ? self.maxReconnectInterval : randTimeout;
                     var e = generateEvent('connecting');
                     e.code = event.code;
                     e.reason = event.reason;
                     e.wasClean = event.wasClean;
                     e.reconnectAttempts = self.reconnectAttempts;
+                    e.retryTimeout = retryTimeout;
                     eventTarget.dispatchEvent(e);
+
                     if (!reconnectAttempt && !timedOut) {
                         if (self.debug || ReconnectingWebSocket.debugAll) {
                             console.debug('ReconnectingWebSocket', 'onclose', self.url);
@@ -269,11 +274,10 @@
                         eventTarget.dispatchEvent(generateEvent('close'));
                     }
 
-                    var timeout = self.reconnectInterval * Math.pow(self.reconnectDecay, self.reconnectAttempts);
                     setTimeout(function() {
                         self.reconnectAttempts++;
                         self.open(true);
-                    }, timeout > self.maxReconnectInterval ? self.maxReconnectInterval : timeout);
+                    }, retryTimeout);
                 }
             };
             ws.onmessage = function(event) {
