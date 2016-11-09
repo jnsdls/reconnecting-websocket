@@ -343,6 +343,11 @@
             if (ws) {
                 self.readyState = WebSocket.CLOSING;
                 eventTarget.dispatchEvent(generateEvent('closing'));
+
+                if (self.debug || ReconnectingWebSocket.debugAll) {
+                  console.debug('ReconnectingWebSocket', 'refresh', self.url, self.readyState);
+                }
+
                 ws.close();
             }
         };
