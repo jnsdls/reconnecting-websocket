@@ -178,6 +178,7 @@
 
         eventTarget.addEventListener('open',       function(event) { self.onopen(event); });
         eventTarget.addEventListener('close',      function(event) { self.onclose(event); });
+        eventTarget.addEventListener('closing',    function(event) { self.onclosing(event); });
         eventTarget.addEventListener('connecting', function(event) { self.onconnecting(event); });
         eventTarget.addEventListener('onmaxretry', function(event) { self.onmaxretry(event); });
         eventTarget.addEventListener('message',    function(event) { self.onmessage(event); });
