@@ -329,7 +329,7 @@
             }
             forcedClose = true;
             if (ws) {
-                readyState = WebSocket.CLOSING;
+                self.readyState = WebSocket.CLOSING;
                 eventTarget.dispatchEvent(generateEvent('closing'));
                 ws.close(code, reason);
             }
@@ -341,6 +341,8 @@
          */
         this.refresh = function() {
             if (ws) {
+                self.readyState = WebSocket.CLOSING;
+                eventTarget.dispatchEvent(generateEvent('closing'));
                 ws.close();
             }
         };
