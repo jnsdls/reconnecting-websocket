@@ -328,6 +328,8 @@
             }
             forcedClose = true;
             if (ws) {
+                readyState = WebSocket.CLOSING;
+                eventTarget.dispatchEvent(generateEvent('closing'));
                 ws.close(code, reason);
             }
         };
@@ -350,6 +352,8 @@
     ReconnectingWebSocket.prototype.onopen = function(event) {};
     /** An event listener to be called when the WebSocket connection's readyState changes to CLOSED. */
     ReconnectingWebSocket.prototype.onclose = function(event) {};
+    /** An event listener to be called when the WebSocket connection's readyState changes to CLOSING. */
+    ReconnectingWebSocket.prototype.onclosing = function(event) {};
     /** An event listener to be called when a connection begins being attempted. */
     ReconnectingWebSocket.prototype.onconnecting = function(event) {};
     /** An event listener to be called when max retry attempt has exceeded. */
