@@ -1,19 +1,36 @@
 {
-  "name": "ReconnectingWebSocket",
-  "version": "1.3.4",
-  "description": "A small JavaScript library that decorates the WebSocket API to provide a WebSocket connection that will automatically reconnect if the connection is dropped.",
-  "main": "reconnecting-websocket.js",
+  "name": "reconnecting-websocket",
+  "version": "2.0.0",
+  "description": "",
+  "main": "dist/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "webpack --config ./webpack.build.config.js",
+    "build:dev": "webpack --config ./webpack.dev.config.js",
+    "clean": "rimraf dist/*",
+    "prepublish": "npm run clean && npm run build"
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/bebo/reconnecting-websocket.git"
+    "url": "git+https://github.com/bebo/reconnecting-websocket.git"
   },
-  "author": "Joe Walnes",
+  "keywords": [
+    "websocket",
+    "reconnecting",
+    "reconnecting-websocket",
+    "es6",
+    "bebo"
+  ],
+  "author": "Jonas Daniels",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/joewalnes/reconnecting-websocket/issues"
+    "url": "https://github.com/bebo/reconnecting-websocket/issues"
   },
-  "homepage": "https://github.com/joewalnes/reconnecting-websocket"
+  "homepage": "https://github.com/bebo/reconnecting-websocket#readme",
+  "devDependencies": {
+    "babel-core": "^6.14.0",
+    "babel-loader": "^6.2.5",
+    "babel-preset-es2015": "^6.14.0",
+    "webpack": "^1.13.2",
+    "rimraf": "^2.5.1"
+  }
 }
