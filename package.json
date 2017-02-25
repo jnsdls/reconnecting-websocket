@@ -1,0 +1,36 @@
+{
+  "name": "reconnecting-websocket",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "webpack --config ./webpack.build.config.js",
+    "build:dev": "webpack --config ./webpack.dev.config.js",
+    "clean": "rimraf dist/*",
+    "prepublish": "npm run clean && npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bebo/reconnecting-websocket.git"
+  },
+  "keywords": [
+    "websocket",
+    "reconnecting",
+    "reconnecting-websocket",
+    "es6",
+    "bebo"
+  ],
+  "author": "Jonas Daniels",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/bebo/reconnecting-websocket/issues"
+  },
+  "homepage": "https://github.com/bebo/reconnecting-websocket#readme",
+  "devDependencies": {
+    "babel-core": "^6.14.0",
+    "babel-loader": "^6.2.5",
+    "babel-preset-es2015": "^6.14.0",
+    "webpack": "^1.13.2",
+    "rimraf": "^2.5.1"
+  }
+}
